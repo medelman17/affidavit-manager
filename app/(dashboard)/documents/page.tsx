@@ -5,7 +5,15 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, FileText, Calendar, Hash } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Plus, FileText, Calendar, Hash, Download, MoreHorizontal, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Document {
@@ -138,9 +146,42 @@ export default function DocumentsPage() {
                       by {doc.declarantName}
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span>{doc.paragraphs.length} paragraphs</span>
-                    <span>{doc.exhibits.length} exhibits</span>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>{doc.paragraphs.length} paragraphs</span>
+                      <span>{doc.exhibits.length} exhibits</span>
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Open menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <Link href={`/documents/${doc.id}/edit`}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Document
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => window.open(`/api/documents/${doc.id}/pdf`, '_blank')}
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Download PDF
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => window.open(`/api/documents/${doc.id}/docx`, '_blank')}
+                        >
+                          <Download className="mr-2 h-4 w-4" />
+                          Download Word
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               </CardContent>
