@@ -130,7 +130,7 @@ export default function DocumentPreview() {
             }
             
             return (
-              <div key={para.id} className="flex">
+              <div key={para.id || `para-${index}`} className="flex">
                 <div className="w-12 text-right pr-4">{para.number}.</div>
                 <div className="flex-1">{content}</div>
               </div>

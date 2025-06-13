@@ -63,11 +63,13 @@ export default function EditDocumentPage({ params }: { params: Promise<{ id: str
         },
         personalKnowledgeStatement: doc.personalKnowledgeStatement,
         paragraphs: doc.paragraphs.map((p: any) => ({
+          id: p.id || `loaded-${p.number}-${Date.now()}`,
           number: p.number,
           content: p.content,
           exhibitReferences: p.exhibitReferences,
         })),
         exhibits: doc.exhibits.map((e: any) => ({
+          id: e.id || `loaded-${e.label}-${Date.now()}`,
           label: e.label,
           description: e.description,
           type: e.type,

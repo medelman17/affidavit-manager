@@ -147,8 +147,8 @@ export default function ExhibitsTab({ data, updateData, onNext, onPrev }: Exhibi
           </Card>
         ) : (
           <div className="space-y-2">
-            {data.exhibits.map((exhibit) => (
-              <Card key={exhibit.id} className="p-4">
+            {data.exhibits.map((exhibit, index) => (
+              <Card key={exhibit.id || `exhibit-${index}`} className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
