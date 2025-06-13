@@ -2,16 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { DocumentType, Jurisdiction, FormStep, DocumentFormData } from '@/app/types';
+import { DocumentType, Jurisdiction, FormStep } from '@/app/types';
+import { useDocumentForm } from '../DocumentFormContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ArrowRight, Save, FileText } from 'lucide-react';
-import BasicsTab from './BasicsTab';
-import ContentTab from './ContentTab';
-import ExhibitsTab from './ExhibitsTab';
-import SignatureTab from './SignatureTab';
+import BasicsTab from '../form/BasicsTab';
+import ContentTab from '../form/ContentTab';
+import ExhibitsTab from '../form/ExhibitsTab';
+import SignatureTab from '../form/SignatureTab';
 
 const tabs = [
   { id: FormStep.BASICS, label: 'Basics', description: 'Case information and court details' },
@@ -24,7 +25,7 @@ export default function DocumentFormPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(FormStep.BASICS);
-  const [formData, setFormData] = useState<DocumentFormData>({});
+  const { formData, updateFormData } = useDocumentForm();
 
   useEffect(() => {
     // Initialize form data from URL params
@@ -36,7 +37,7 @@ export default function DocumentFormPage() {
       return;
     }
 
-    setFormData({
+    updateFormData({
       type,
       jurisdiction,
       caseInfo: {
@@ -55,11 +56,7 @@ export default function DocumentFormPage() {
         declarantName: '',
       },
     });
-  }, [searchParams, router]);
-
-  const updateFormData = (updates: Partial<DocumentFormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
-  };
+  }, [searchParams, router, updateFormData]);
 
   const handleSave = async () => {
     try {

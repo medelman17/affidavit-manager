@@ -1,7 +1,8 @@
 # Affidavit Manager
 
-A professional legal document generation system for creating affidavits, certifications, and verifications for civil litigation. Built with Next.js 15, React 19, TypeScript, and Tailwind CSS v4.
+A complete professional legal document generation system for creating affidavits, certifications, and verifications for civil litigation. Features real-time preview, multi-format export, and court-compliant formatting. Built with Next.js 15, React 19, TypeScript, and Tailwind CSS v4.
 
+![Status](https://img.shields.io/badge/Status-Feature--Complete-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15.3.3-black)
 ![React](https://img.shields.io/badge/React-19.0.0-blue)
@@ -32,6 +33,13 @@ A professional legal document generation system for creating affidavits, certifi
   - Signature: Declarant and attorney information
 - **Smart Defaults**: Jurisdiction-specific language and formatting
 - **Validation**: Required field enforcement and legal compliance checks
+
+### Real-Time Preview
+- **Split-Screen Editor**: Live document preview alongside form editing
+- **Parallel Routes**: Leverages Next.js 15 parallel routes for optimal performance
+- **Professional Formatting**: Preview matches final PDF output exactly
+- **Instant Updates**: See changes as you type with smooth, debounced rendering
+- **Court-Compliant Layout**: 8.5" x 11" format with proper legal document structure
 
 ### UI/UX
 - **Modern Design**: Beautiful interface built with shadcn/ui components
