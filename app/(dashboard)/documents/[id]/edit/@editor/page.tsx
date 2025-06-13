@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { DocumentType, Jurisdiction, FormStep } from '@/app/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -92,7 +93,7 @@ export default function EditDocumentEditor({ params }: { params: Promise<{ id: s
       });
     } catch (error) {
       console.error('Error fetching document:', error);
-      alert('Failed to load document. Please try again.');
+      toast.error('Failed to load document. Please try again.');
       router.push('/documents');
     } finally {
       setLoading(false);
@@ -117,10 +118,10 @@ export default function EditDocumentEditor({ params }: { params: Promise<{ id: s
       const savedDocument = await response.json();
       console.log('Document saved:', savedDocument);
       
-      alert('Document saved successfully!');
+      toast.success('Document saved successfully!');
     } catch (error) {
       console.error('Error saving document:', error);
-      alert('Failed to save document. Please try again.');
+      toast.error('Failed to save document. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -148,10 +149,11 @@ export default function EditDocumentEditor({ params }: { params: Promise<{ id: s
       // Generate PDF
       window.open(`/api/documents/${savedDocument.id}/pdf`, '_blank');
       
+      toast.success('Document generated successfully!');
       router.push('/documents');
     } catch (error) {
       console.error('Error generating document:', error);
-      alert('Failed to generate document. Please try again.');
+      toast.error('Failed to generate document. Please try again.');
     } finally {
       setSaving(false);
     }

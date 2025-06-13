@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
 import { DocumentType, Jurisdiction, FormStep } from '@/app/types';
 import { useDocumentForm } from '../DocumentFormContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ArrowRight, Save, FileText } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, FileText, Loader2 } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { useFormValidation } from '@/app/hooks/useFormValidation';
 import BasicsTab from '../form/BasicsTab';
 import ContentTab from '../form/ContentTab';
 import ExhibitsTab from '../form/ExhibitsTab';
@@ -25,7 +28,9 @@ export default function DocumentFormPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(FormStep.BASICS);
+  const [saving, setSaving] = useState(false);
   const { formData, updateFormData } = useDocumentForm();
+  const { validateComplete } = useFormValidation();
 
   useEffect(() => {
     // Initialize form data from URL params
@@ -59,6 +64,7 @@ export default function DocumentFormPage() {
   }, [searchParams, router, updateFormData]);
 
   const handleSave = async () => {
+    setSaving(true);
     try {
       const response = await fetch('/api/documents', {
         method: 'POST',
@@ -75,15 +81,24 @@ export default function DocumentFormPage() {
       const savedDocument = await response.json();
       console.log('Document saved:', savedDocument);
       
-      // Show success message (you could use a toast here)
-      alert('Document saved successfully!');
+      toast.success('Document saved successfully!');
     } catch (error) {
       console.error('Error saving document:', error);
-      alert('Failed to save document. Please try again.');
+      toast.error('Failed to save document. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleGenerate = async () => {
+    // Validate the complete document before generating
+    const validation = validateComplete(formData);
+    if (!validation.isValid) {
+      toast.error(`Please fix the following errors before generating: ${validation.errors.slice(0, 3).join(', ')}${validation.errors.length > 3 ? '...' : ''}`);
+      return;
+    }
+
+    setSaving(true);
     try {
       // First save the document
       const response = await fetch('/api/documents', {
@@ -104,10 +119,13 @@ export default function DocumentFormPage() {
       // Generate PDF
       window.open(`/api/documents/${savedDocument.id}/pdf`, '_blank');
       
+      toast.success('Document generated successfully!');
       router.push('/documents');
     } catch (error) {
       console.error('Error generating document:', error);
-      alert('Failed to generate document. Please try again.');
+      toast.error('Failed to generate document. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -160,13 +178,31 @@ export default function DocumentFormPage() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleSave}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Draft
+            <Button variant="outline" onClick={handleSave} disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Draft
+                </>
+              )}
             </Button>
-            <Button onClick={handleGenerate}>
-              Generate Document
-              <ArrowRight className="ml-2 h-4 w-4" />
+            <Button onClick={handleGenerate} disabled={saving}>
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  Generate Document
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -191,11 +227,13 @@ export default function DocumentFormPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <BasicsTab
-                  data={formData}
-                  updateData={updateFormData}
-                  onNext={() => setActiveTab(FormStep.CONTENT)}
-                />
+                <ErrorBoundary>
+                  <BasicsTab
+                    data={formData}
+                    updateData={updateFormData}
+                    onNext={() => setActiveTab(FormStep.CONTENT)}
+                  />
+                </ErrorBoundary>
               </CardContent>
             </Card>
           </TabsContent>
@@ -209,12 +247,14 @@ export default function DocumentFormPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ContentTab
-                  data={formData}
-                  updateData={updateFormData}
-                  onNext={() => setActiveTab(FormStep.EXHIBITS)}
-                  onPrev={() => setActiveTab(FormStep.BASICS)}
-                />
+                <ErrorBoundary>
+                  <ContentTab
+                    data={formData}
+                    updateData={updateFormData}
+                    onNext={() => setActiveTab(FormStep.EXHIBITS)}
+                    onPrev={() => setActiveTab(FormStep.BASICS)}
+                  />
+                </ErrorBoundary>
               </CardContent>
             </Card>
           </TabsContent>
@@ -228,12 +268,14 @@ export default function DocumentFormPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ExhibitsTab
-                  data={formData}
-                  updateData={updateFormData}
-                  onNext={() => setActiveTab(FormStep.SIGNATURE)}
-                  onPrev={() => setActiveTab(FormStep.CONTENT)}
-                />
+                <ErrorBoundary>
+                  <ExhibitsTab
+                    data={formData}
+                    updateData={updateFormData}
+                    onNext={() => setActiveTab(FormStep.SIGNATURE)}
+                    onPrev={() => setActiveTab(FormStep.CONTENT)}
+                  />
+                </ErrorBoundary>
               </CardContent>
             </Card>
           </TabsContent>
@@ -247,12 +289,14 @@ export default function DocumentFormPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <SignatureTab
-                  data={formData}
-                  updateData={updateFormData}
-                  onPrev={() => setActiveTab(FormStep.EXHIBITS)}
-                  onComplete={handleGenerate}
-                />
+                <ErrorBoundary>
+                  <SignatureTab
+                    data={formData}
+                    updateData={updateFormData}
+                    onPrev={() => setActiveTab(FormStep.EXHIBITS)}
+                    onComplete={handleGenerate}
+                  />
+                </ErrorBoundary>
               </CardContent>
             </Card>
           </TabsContent>

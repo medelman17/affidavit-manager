@@ -32,7 +32,11 @@ A complete professional legal document generation system for creating affidavits
   - Exhibits: Manage document exhibits (A-Z, AA-ZZ labeling)
   - Signature: Declarant and attorney information
 - **Smart Defaults**: Jurisdiction-specific language and formatting
-- **Validation**: Required field enforcement and legal compliance checks
+- **Professional Validation**: Comprehensive form validation with legal compliance
+  - Required field indicators with visual cues
+  - Real-time validation feedback with error messages
+  - Legal document format requirements (case captions, numbers, etc.)
+  - Pre-generation validation to prevent incomplete documents
 
 ### Real-Time Preview
 - **Split-Screen Editor**: Live document preview alongside form editing
@@ -44,8 +48,10 @@ A complete professional legal document generation system for creating affidavits
 ### UI/UX
 - **Modern Design**: Beautiful interface built with shadcn/ui components
 - **Responsive Layout**: Works seamlessly on desktop and tablet devices
-- **Real-time Updates**: Form state management with immediate feedback
-- **Loading States**: Clear indicators for async operations
+- **Professional Feedback**: Toast notifications for all user actions
+- **Loading States**: Spinners and disabled states during async operations
+- **Error Handling**: Graceful error boundaries with recovery options
+- **Accessibility**: Proper form labels, validation messages, and keyboard navigation
 
 ## 🛠️ Tech Stack
 
@@ -55,6 +61,8 @@ A complete professional legal document generation system for creating affidavits
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) with PostCSS
 - **Components**: [shadcn/ui](https://ui.shadcn.com/) (canary version for Tailwind v4)
 - **Language**: [TypeScript 5](https://www.typescriptlang.org/) with strict mode
+- **Notifications**: [Sonner](https://sonner.emilkowal.ski/) for toast notifications
+- **Form Validation**: Custom validation system with legal document compliance
 
 ### Backend
 - **API**: Next.js API Routes with App Router
@@ -150,11 +158,16 @@ affidavit-manager/
 │   │   └── layout.tsx      # Dashboard layout
 │   ├── api/                # API routes
 │   │   └── documents/      # Document CRUD endpoints
+│   ├── hooks/              # Custom React hooks
+│   │   └── useFormValidation.ts  # Form validation hook
 │   ├── lib/                # Utility functions
-│   │   └── document-templates.ts  # Legal document templates
+│   │   ├── document-templates.ts  # Legal document templates
+│   │   └── validation.ts   # Form validation rules
 │   └── types/              # TypeScript type definitions
 ├── components/             # Reusable React components
 │   └── ui/                # shadcn/ui components
+│       ├── form-field.tsx # Validated form components
+│       └── error-boundary.tsx # Error handling components
 ├── prisma/                # Database schema and migrations
 │   ├── schema.prisma      # Prisma schema definition
 │   └── seed.ts           # Database seeding script
