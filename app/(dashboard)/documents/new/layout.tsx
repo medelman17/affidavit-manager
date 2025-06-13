@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname, useSearchParams } from 'next/navigation';
 import { DocumentFormProvider } from './DocumentFormContext';
 
 export default function NewDocumentLayout({
@@ -11,10 +12,13 @@ export default function NewDocumentLayout({
   editor: React.ReactNode;
   preview: React.ReactNode;
 }) {
-  // Check if we have editor content (form is active)
-  const hasEditorContent = editor !== null;
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   
-  if (!hasEditorContent) {
+  // Check if we're on the form route or have form parameters
+  const isFormRoute = pathname.includes('/form') || (searchParams.get('type') && searchParams.get('jurisdiction'));
+  
+  if (!isFormRoute) {
     // Show the document type selection page
     return <>{children}</>;
   }
